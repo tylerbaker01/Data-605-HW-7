@@ -1,0 +1,160 @@
+---
+title: "Week 7 Data 605 Assignment"
+author: "Tyler Baker"
+date: "3/12/2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(stats)
+```
+
+# Week 7 Assignment
+
+## Important Distributions, Expected Value, Variance
+
+1. Let X1, X2, . . . , Xn be n mutually independent random variables, each of
+which is uniformly distributed on the integers from 1 to k. Let Y denote the
+minimum of the Xi’s. Find the distribution of Y .
+
+Answer
+1. Since X1 up to Xn are mutually independent we know that 
+P(X1 intersection X2) = P(X1)P(X2) for all Xi.
+2. Since each Xi is uniformly distributed, we know that the probability of each l, where 1<=l<=k is 1/k.
+3. I would like to think of each Xi as roll of k-sided dice. 
+4. Thus, I think the minimum would be rolling a 1 on a k-sided die n times.
+I think that would make the probability of that happening would be 1/((k^2)(n)).
+
+2. Your organization owns a copier (future lawyers, etc.) or MRI (future doctors).
+This machine has a manufacturer’s expected lifetime of 10 years. This means
+that we expect one failure every ten years. (Include the probability statements
+and R Code for each part.).
+
+Note
+p = P(machine will fail within 10 years) = .1
+
+p-1 = P(machine will not fail within 10 years) = .9
+
+a. What is the probability that the machine will fail after 8 years?. Provide also the
+expected value and standard deviation. Model as a geometric. (Hint: the probability is
+equivalent to not failing during the first 8 years..)
+
+Answer
+Geometric distribution
+P(X<=x) = 1 - (1-p)^x
+
+P(X>x) = 1 - P(X<=x)
+
+so,
+P(X>8) = 1 - P(X<=8)
+P(X>8) = 1 - (1-(1-.1)^8)
+P(X>8) = 1 - (1 -.9^8)
+
+```{r}
+print(1 - (1 - (.9)^8))
+
+p <- .1
+q <- .9
+
+pgeom(8,p,lower.tail = FALSE)
+```
+I'm not sure why these numbers are not matching up.
+
+Expected value of Geometric distribution is 1/p.
+
+```{r}
+print(1/p)
+```
+Variance of geometric distribution is (1-p)/p^2
+```{r}
+print((1-p)/((p)^2))
+```
+So SD = sqrt(var(X))
+```{r}
+print(sqrt((1-p)/((p)^2)))
+```
+
+
+b. What is the probability that the machine will fail after 8 years?. Provide also the
+expected value and standard deviation. Model as an exponential. 
+
+
+lambda = l = .1
+P(X>x) = 1 - P(X<=x)
+and,
+P(X<=x) = 1 - e^
+so,
+P(X>x) = 1 - (1 - e^(-.1*8))
+```{r}
+print(1 - (1 - exp(-.1*8)))
+pexp(8, .1, lower.tail = FALSE)
+```
+The expected value is 1/ lambda.
+```{r}
+print(1/.1)
+```
+The variance is 1/ (lambda)^2.
+So the standard deviation is
+sqrt(1/lambda^2)
+```{r}
+print(sqrt(1/(.1)^2))
+```
+
+c. What is the probability that the machine will fail after 8 years?. Provide also the
+expected value and standard deviation. Model as a binomial. (Hint: 0 success in 8
+years)
+
+b(x, n, p) = (n choose x) * p^x * (1-p)^(n-x)
+
+p = .1
+n = 8
+x = 0
+
+Therefore,
+```{r}
+sol <- choose(8,0) * ((.1)^0) * ((.9)^(8-0))
+print(1- sol)
+pbinom(0, 8, .1, lower.tail=FALSE)
+```
+The Expected Value for a binomial distribution is n * p.
+```{r}
+print(8 * .1)
+```
+The standard deviation is sqrt(n * p * (1-p))
+```{r}
+sqrt(8 * .1 * .9)
+```
+d. What is the probability that the machine will fail after 8 years?. Provide also the
+expected value and standard deviation. Model as a Poisson. 
+
+lambda is equal to the expected value which is equal to the expected number of successes. 
+In this case, lambda = l = .8
+
+The CDF is the sum from i=0 to x with the function (e^(-l)l^i/(i!))
+
+However, a sum and an integral are essentially the same.
+
+So I can just use the function (e^(-l)l^x/x!)
+
+```{r}
+integrand <- function(x) {(exp(-.8)*((.8)^x))/factorial(x)}
+integrate(integrand, lower= 8, upper = 10)
+```
+
+
+```{r}
+ppois(0, .8, lower.tail = FALSE)
+```
+I definitly did something wrong with my math above but not sure where I messed up.
+
+The expected value again is lambda.
+
+The variance is also lambda.
+
+The standard deviation is sqrt(lambda).
+```{r}
+print(sqrt(.8))
+```
